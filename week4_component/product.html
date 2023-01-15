@@ -63,6 +63,7 @@
             </tr>
           </tbody>
         </table>
+        <pagination :props-pagination="pagination"></pagination>
       </div>
       <!-- Modal -->
       <div
@@ -321,6 +322,24 @@
       </div>
       <!-- Modal -->
     </div>
+    <script type="text/x-template" id="pagination">
+      <div>
+        {{propsPagination}}
+      </div>
+      <ul class="pagination">
+        <li class="page-item" :class="{disabled: propsPagination.current_page===1}">
+          <a class="page-link" href="#" aria-label="Previous">
+            <span aria-hidden="true">&laquo;</span>
+          </a>
+        </li>
+        <li class="page-item" v-for='(page,index) in propsPagination.total_pages' :key="index"><a class="page-link" href="#">{{page}}</a></li>
+        <li class="page-item">
+          <a class="page-link" href="#" aria-label="Next">
+            <span aria-hidden="true">&raquo;</span>
+          </a>
+        </li>
+      </ul>
+    </script>
     <script
       src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.9.1/axios.min.js"
       integrity="sha512-Xk3wWei2TGrsh9kDSBKUMIjw/86sLUvhtnv9f7fOuIwhhiUTKz8szkWkzHthrM5Bb3Bu9idSzkxOrkzhcneuiw=="
