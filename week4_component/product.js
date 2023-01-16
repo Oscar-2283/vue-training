@@ -1,5 +1,6 @@
 import { createApp } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js';
 
+import pagination from './pagination.js';
 let myModal = '';
 let deleteModal = '';
 const app = createApp({
@@ -48,13 +49,14 @@ const app = createApp({
     closeModal() {
       myModal.hide();
     },
-    getProduct() {
+    getProduct(page = 1) {
       axios
-        .get(`${this.url}/api/${this.path}/admin/products`)
+        .get(`${this.url}/api/${this.path}/admin/products/?page=${page}`)
         .then((res) => {
           console.log(res.data);
-          this.pagination = res.data.pagination;
-          this.products = res.data.products;
+          const { pagination, products } = res.data;
+          this.pagination = pagination;
+          this.products = products;
         })
         .catch((err) => console.log(err.response));
     },
@@ -98,7 +100,9 @@ const app = createApp({
       this.temp.imagesUrl.push('');
     },
   },
-  components: {},
+  components: {
+    pagination,
+  },
   mounted() {
     const token = document.cookie.replace(
       /(?:(?:^|.*;\s*)myToken\s*\=\s*([^;]*).*$)|^.*$/,
@@ -112,8 +116,8 @@ const app = createApp({
     );
   },
 });
-app.component('pagination', {
-  props: ['propsPagination'],
-  template: '#pagination',
+app.component('product-modal', {
+  props: ['product', 'is_new'],
+  template: '#product-modal-temp',
 });
 app.mount('#app');
