@@ -1,6 +1,7 @@
 import { createApp } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js';
 
 import pagination from './pagination.js';
+import delete_modal from './delete-modal.js';
 let myModal = '';
 let deleteModal = '';
 const app = createApp({
@@ -46,9 +47,6 @@ const app = createApp({
           break;
       }
     },
-    closeModal() {
-      myModal.hide();
-    },
     getProduct(page = 1) {
       axios
         .get(`${this.url}/api/${this.path}/admin/products/?page=${page}`)
@@ -87,13 +85,13 @@ const app = createApp({
     },
     deleteProduct(id) {
       axios
-        .delete(`${this.url}/api/${this.path}/admin/product/${id}`)
+        .delete(`${this.url}/api/${this.path}/admin/produc/${id}`)
         .then((res) => {
           alert(res.data.message);
           deleteModal.hide();
           this.getProduct();
         })
-        .catch((err) => console.dir(err));
+        .catch((err) => alert(err.data.message));
     },
     createImages() {
       this.temp.imagesUrl = [];
@@ -102,6 +100,7 @@ const app = createApp({
   },
   components: {
     pagination,
+    delete_modal,
   },
   mounted() {
     const token = document.cookie.replace(
