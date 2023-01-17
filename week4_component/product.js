@@ -51,12 +51,11 @@ const app = createApp({
       axios
         .get(`${this.url}/api/${this.path}/admin/products/?page=${page}`)
         .then((res) => {
-          console.log(res.data);
           const { pagination, products } = res.data;
           this.pagination = pagination;
           this.products = products;
         })
-        .catch((err) => console.log(err.response));
+        .catch((err) => alert(err.data.message));
     },
     addProduct(is_new) {
       if (is_new) {
@@ -85,7 +84,7 @@ const app = createApp({
     },
     deleteProduct(id) {
       axios
-        .delete(`${this.url}/api/${this.path}/admin/produc/${id}`)
+        .delete(`${this.url}/api/${this.path}/admin/product/${id}`)
         .then((res) => {
           alert(res.data.message);
           deleteModal.hide();

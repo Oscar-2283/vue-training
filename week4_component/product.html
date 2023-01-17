@@ -78,7 +78,11 @@
         aria-labelledby="productModalLabel"
         aria-hidden="true"
       >
-        <product-modal :product="temp" @emit-add="addProduct"></product-modal>
+        <product-modal
+          :product="temp"
+          :is_new="is_new"
+          @emit-add="addProduct"
+        ></product-modal>
       </div>
       <div
         id="delProductModal"
@@ -305,7 +309,7 @@
             <button
               type="button"
               class="btn btn-primary"
-              @click="$emit('emit-add')"
+              @click="$emit('emit-add',is_new)"
             >
               確認
             </button>
