@@ -1,8 +1,8 @@
 import { createApp } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js';
 
-import pagination from './compotent/pagination.js';
-import delete_modal from './compotent/delete-modal.js';
-import product_modal from './compotent/product-modal.js';
+import pagination from './compotents/pagination.js';
+import delete_modal from './compotents/delete-modal.js';
+import product_modal from './compotents/product-modal.js';
 
 let myModal = '';
 let deleteModal = '';
