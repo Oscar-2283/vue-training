@@ -1,7 +1,9 @@
 import { createApp } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js';
 
-import pagination from './pagination.js';
-import delete_modal from './delete-modal.js';
+import pagination from './compotent/pagination.js';
+import delete_modal from './compotent/delete-modal.js';
+import product_modal from './compotent/product-modal.js';
+
 let myModal = '';
 let deleteModal = '';
 const app = createApp({
@@ -25,7 +27,7 @@ const app = createApp({
           this.getProduct();
         })
         .catch((err) => {
-          alert(err.response.data.message);
+          alert(err.data.message);
           location.href = 'login.html';
         });
     },
@@ -68,7 +70,7 @@ const app = createApp({
             myModal.hide();
             this.getProduct();
           })
-          .catch((err) => console.dir(err));
+          .catch((err) => alert(err.data.message));
       } else {
         axios
           .put(`${this.url}/api/${this.path}/admin/product/${this.temp.id}`, {
@@ -100,6 +102,7 @@ const app = createApp({
   components: {
     pagination,
     delete_modal,
+    product_modal,
   },
   mounted() {
     const token = document.cookie.replace(
@@ -114,8 +117,5 @@ const app = createApp({
     );
   },
 });
-app.component('product-modal', {
-  props: ['product', 'is_new'],
-  template: '#product-modal-temp',
-});
+
 app.mount('#app');
