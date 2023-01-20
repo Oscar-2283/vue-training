@@ -1,6 +1,5 @@
 export default {
   props: ['product', 'is_new'],
-  template: '#product-modal-temp',
   template: `
   <div class="modal-dialog modal-xl">
     <div class="modal-content border-0">
