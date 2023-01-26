@@ -59,8 +59,8 @@ const app = createApp({
         })
         .catch((err) => alert(err.data.message));
     },
-    addProduct(is_new) {
-      if (is_new) {
+    addProduct() {
+      if (this.is_new) {
         axios
           .post(`${this.url}/api/${this.path}/admin/product`, {
             data: this.temp,

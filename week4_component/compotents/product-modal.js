@@ -1,5 +1,5 @@
 export default {
-  props: ['product', 'is_new'],
+  props: ['product'],
   template: `
   <div class="modal-dialog modal-xl">
     <div class="modal-content border-0">
@@ -195,7 +195,7 @@ export default {
         <button
           type="button"
           class="btn btn-primary"
-          @click="$emit('emit-add',is_new)"
+          @click="$emit('emit-add')"
         >
           確認
         </button>
