@@ -1,4 +1,5 @@
 export default {
+  props:['tempProduct'],
   template: `
   <div class="modal fade" id="productModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" ref="modal">
     <div class="modal-dialog modal-xl" role="document">
@@ -16,12 +17,12 @@ export default {
               <img class="img-fluid" :src="" alt="">
             </div>
             <div class="col-sm-6">
-              <span class="badge bg-primary rounded-pill">{{  }}</span>
-              <p>商品描述：{{  }}</p>
-              <p>商品內容：{{  }}</p>
+              <span class="badge bg-primary rounded-pill">{{ tempProduct.title }}</span>
+              <p>商品描述：{{ tempProduct.description }}</p>
+              <p>商品內容：{{ tempProduct.content }}</p>
               <div class="h5">{{  }} 元</div>
-              <del class="h6">原價 {{ }} 元</del>
-              <div class="h5">現在只要 {{  }} 元</div>
+              <del class="h6">原價 {{ tempProduct.origin_price }} 元</del>
+              <div class="h5">現在只要 {{ tempProduct.price }} 元</div>
               <div>
                 <div class="input-group">
                   <input type="number" class="form-control"min="1">

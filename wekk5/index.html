@@ -21,10 +21,11 @@
 
   <body>
     <div id="app">
+      {{products}}
       <div class="container">
         <div class="mt-4">
           <!-- 產品Modal -->
-          <product-modal></product-modal>
+          <product-modal ref="productModal" :temp-product="tempProduct"></product-modal>
           <!-- 產品Modal -->
 
           <table class="table align-middle">
@@ -37,9 +38,9 @@
               </tr>
             </thead>
             <tbody>
-              <tr>
+              <tr v-for="product in products" :key="product.id">
                 <td style="width: 200px">
-                  <div
+                  <div :style="{ backgroundImage: 'url(' + product.imageUrl + ')' }"
                     style="
                       height: 100px;
                       background-size: cover;
@@ -47,15 +48,15 @@
                     "
                   ></div>
                 </td>
-                <td>{{test }}</td>
+                <td>{{product.title}}</td>
                 <td>
                   <div class="h5">{{ }} 元</div>
-                  <del class="h6">原價 {{ }} 元</del>
-                  <div class="h5">現在只要 {{ }} 元</div>
+                  <del class="h6">原價 {{ product.origin_price }} 元</del>
+                  <div class="h5">現在只要 {{ product.price  }} 元</div>
                 </td>
                 <td>
                   <div class="btn-group btn-group-sm">
-                    <button type="button" class="btn btn-outline-secondary">
+                    <button type="button" class="btn btn-outline-secondary" @click="showModal(product)">
                       <i class="fas fa-spinner fa-pulse"></i>
                       查看更多
                     </button>
