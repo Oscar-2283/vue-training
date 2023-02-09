@@ -6,32 +6,28 @@ const app = createApp({
     return {
       url: 'https://vue3-course-api.hexschool.io/v2',
       path: 'test8283',
-      products:[],
-      modal:{},
-      tempProduct:{}
+      products: [],
+      productId: '',
     };
   },
   methods: {
     getProduct() {
-      axios.get(`${this.url}/api/${this.path}/products/all`)
-        .then(res=>{
-          const { products } = res.data
-          this.products = products
+      axios
+        .get(`${this.url}/api/${this.path}/products/all`)
+        .then((res) => {
+          const { products } = res.data;
+          this.products = products;
         })
-        .catch(err => console.log(err))
+        .catch((err) => console.log(err));
     },
-    openModal(){
-      this.modal = new bootstrap.Modal(this.$refs.productModal.$refs.modal)
-      
+    openModal(id) {
+      this.productId = id;
+      console.log('外層帶入productId', id);
     },
-    showModal(product){
-      this.tempProduct= {...product}
-      this.modal.show()
-    }
   },
+
   mounted() {
-    this.getProduct()
-    this.openModal()
+    this.getProduct();
   },
   components: {
     productModal,

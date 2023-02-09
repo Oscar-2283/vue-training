@@ -1,12 +1,41 @@
 export default {
-  props:['tempProduct'],
+  props: ['id'],
+  data() {
+    return {
+      url: 'https://vue3-course-api.hexschool.io/v2',
+      path: 'test8283',
+      tempProduct: {},
+      modal: {},
+      loading: false,
+    };
+  },
+  watch: {
+    id() {
+      console.log(this.id);
+      axios
+        .get(`${this.url}/api/${this.path}/product/${this.id}`)
+        .then((res) => {
+          this.loading = true;
+          const { product } = res.data;
+          this.tempProduct = product;
+          setTimeout(() => {
+            this.loading = false;
+            this.modal.show();
+          }, 1000);
+        })
+        .catch((err) => console.log(err));
+    },
+  },
+  mounted() {
+    this.modal = new bootstrap.Modal(this.$refs.modal);
+  },
   template: `
   <div class="modal fade" id="productModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" ref="modal">
     <div class="modal-dialog modal-xl" role="document">
       <div class="modal-content border-0">
         <div class="modal-header bg-dark text-white">
           <h5 class="modal-title" id="exampleModalLabel">
-            <span>{{  }}</span>
+            <span>{{ tempProduct.title }}</span>
           </h5>
           <button type="button" class="btn-close"
                   data-bs-dismiss="modal" aria-label="Close"></button>
@@ -17,12 +46,12 @@ export default {
               <img class="img-fluid" :src="" alt="">
             </div>
             <div class="col-sm-6">
-              <span class="badge bg-primary rounded-pill">{{ tempProduct.title }}</span>
-              <p>商品描述：{{ tempProduct.description }}</p>
-              <p>商品內容：{{ tempProduct.content }}</p>
+              <span class="badge bg-primary rounded-pill">{{  }}</span>
+              <p>商品描述：{{ }}</p>
+              <p>商品內容：{{ }}</p>
               <div class="h5">{{  }} 元</div>
-              <del class="h6">原價 {{ tempProduct.origin_price }} 元</del>
-              <div class="h5">現在只要 {{ tempProduct.price }} 元</div>
+              <del class="h6">原價 {{  }} 元</del>
+              <div class="h5">現在只要 {{  }} 元</div>
               <div>
                 <div class="input-group">
                   <input type="number" class="form-control"min="1">
