@@ -8,6 +8,8 @@ const app = createApp({
       path: 'test8283',
       products: [],
       productId: '',
+      carts:'',
+      qty:1
     };
   },
   methods: {
@@ -24,10 +26,46 @@ const app = createApp({
       this.productId = id;
       console.log('外層帶入productId', id);
     },
+    getCart(){
+      axios
+      .get(`${this.url}/api/${this.path}/cart`)
+      .then((res) => {
+        const { carts } =res.data.data;
+        this.carts = carts
+      })
+      .catch((err) => console.log(err));
+    },
+    addToCart(id,qty=1){
+      const data ={
+        "product_id": id,
+        qty
+      }
+      axios
+      .post(`${this.url}/api/${this.path}/cart`,{ data } )
+      .then((res) => {
+        console.log( '加入購物車' ,res.data)
+        this.getCart()
+      })
+      .catch((err) => console.log(err));
+    },
+    updateToCart(item){
+      console.log(item)
+      let data = {
+        product_id:item.product_id,
+        qty:item.product.num
+      }
+      axios
+      .put(`${this.url}/api/${this.path}/cart/${item.id}` , { data })
+      .then((res) => {
+        console.log(res.data)
+      })
+      .catch((err) => console.log(err));
+    }
   },
 
   mounted() {
     this.getProduct();
+    this.getCart()
   },
   components: {
     productModal,

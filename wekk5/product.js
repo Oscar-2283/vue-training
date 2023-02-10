@@ -9,6 +9,11 @@ export default {
       loading: false,
     };
   },
+  methods:{
+    addCart(id){
+      this.$emit('emitAddToCart',id)
+    }
+  },
   watch: {
     id() {
       console.log(this.id);
@@ -55,7 +60,7 @@ export default {
               <div>
                 <div class="input-group">
                   <input type="number" class="form-control"min="1">
-                  <button type="button" class="btn btn-primary">加入購物車</button>
+                  <button type="button" class="btn btn-primary" @click="addCart(tempProduct.id)">加入購物車</button>
                 </div>
               </div>
             </div>
