@@ -7,65 +7,107 @@ const app = createApp({
       url: 'https://vue3-course-api.hexschool.io/v2',
       path: 'test8283',
       products: [],
-      productId: '',
-      carts:'',
-      qty:1
+      tempProduct: {},
+      cart: {},
+      qty: 1,
+      loading: {
+        loadingItem: '',
+      },
     };
   },
   methods: {
-    getProduct() {
+    getProducts() {
       axios
         .get(`${this.url}/api/${this.path}/products/all`)
         .then((res) => {
           const { products } = res.data;
           this.products = products;
+          console.log(products);
         })
         .catch((err) => console.log(err));
     },
-    openModal(id) {
-      this.productId = id;
-      console.log('外層帶入productId', id);
-    },
-    getCart(){
+    getProduct(id) {
+      this.loading.loadingItem = id;
       axios
-      .get(`${this.url}/api/${this.path}/cart`)
-      .then((res) => {
-        const { carts } =res.data.data;
-        this.carts = carts
-      })
-      .catch((err) => console.log(err));
+        .get(`${this.url}/api/${this.path}/product/${id}`)
+        .then((res) => {
+          const { product } = res.data;
+          this.tempProduct = product;
+          setTimeout(() => {
+            this.$refs.productModal.modal.show();
+            this.loading.loadingItem = '';
+          }, 300);
+        })
+        .catch((err) => console.log(err));
     },
-    addToCart(id,qty=1){
-      const data ={
-        "product_id": id,
-        qty
-      }
+    getCart() {
       axios
-      .post(`${this.url}/api/${this.path}/cart`,{ data } )
-      .then((res) => {
-        console.log( '加入購物車' ,res.data)
-        this.getCart()
-      })
-      .catch((err) => console.log(err));
+        .get(`${this.url}/api/${this.path}/cart`)
+        .then((res) => {
+          this.cart = res.data.data;
+        })
+        .catch((err) => console.log(err));
     },
-    updateToCart(item){
-      console.log(item)
+    addToCart(product_id, qty = 1) {
+      this.loading.loadingItem = product_id;
+      const data = {
+        product_id,
+        qty,
+      };
+      axios
+        .post(`${this.url}/api/${this.path}/cart`, { data })
+        .then((res) => {
+          this.$refs.productModal.modal.hide();
+          this.getCart();
+          setTimeout(() => {
+            this.loading.loadingItem = '';
+          }, 300);
+        })
+        .catch((err) => console.log(err));
+    },
+    updateToCart(item) {
       let data = {
-        product_id:item.product_id,
-        qty:item.product.num
-      }
+        product_id: item.product_id,
+        qty: item.qty,
+      };
       axios
-      .put(`${this.url}/api/${this.path}/cart/${item.id}` , { data })
-      .then((res) => {
-        console.log(res.data)
-      })
-      .catch((err) => console.log(err));
-    }
+        .put(`${this.url}/api/${this.path}/cart/${item.id}`, { data })
+        .then((res) => {
+          this.getCart();
+        })
+        .catch((err) => console.log(err));
+    },
+    deleteCarts() {
+      axios
+        .delete(`${this.url}/api/${this.path}/carts`)
+        .then((res) => {
+          this.getCart();
+        })
+        .catch((err) => alert(err.data.message));
+    },
+    deleteCart(id) {
+      this.loading.loadingItem = id;
+      axios
+        .delete(`${this.url}/api/${this.path}/cart/${id}`)
+        .then((res) => {
+          this.getCart();
+          this.loading.loadingItem = '';
+        })
+        .catch((err) => alert(err.data.message));
+    },
+    isLoadingItem(product_id) {
+      return (
+        this.loading.loadingItem ===
+        this.cart.carts.find((item) => {
+          item.product.id === product_id ? true : false;
+        })
+      );
+    },
   },
 
   mounted() {
-    this.getProduct();
-    this.getCart()
+    this.getProducts();
+    this.getCart();
   },
   components: {
     productModal,
