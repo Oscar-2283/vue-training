@@ -1,6 +1,24 @@
-const { createApp } = Vue;
 import productModal from './product.js';
+const { createApp } = Vue;
+const { defineRule, Form, Field, ErrorMessage } = VeeValidate;
+const { required, email } = VeeValidateRules;
+defineRule('required', required);
+defineRule('email', email);
+Object.keys(VeeValidateRules).forEach((rule) => {
+  if (rule !== 'default') {
+    VeeValidate.defineRule(rule, VeeValidateRules[rule]);
+  }
+});
+// 讀取外部的資源
+VeeValidateI18n.loadLocaleFromURL(
+  'https://unpkg.com/@vee-validate/i18n@4.1.0/dist/locale/zh_TW.json'
+);
 
+// Activate the locale
+VeeValidate.configure({
+  generateMessage: VeeValidateI18n.localize('zh_TW'),
+  validateOnInput: true, // 調整為：輸入文字時，就立即進行驗證
+});
 const app = createApp({
   data() {
     return {
@@ -10,8 +28,15 @@ const app = createApp({
       tempProduct: {},
       cart: {},
       qty: 1,
-      loading: {
-        loadingItem: '',
+      loading: '',
+      form: {
+        user: {
+          name: '',
+          email: '',
+          tel: '',
+          address: '',
+        },
+        message: '',
       },
     };
   },
@@ -22,12 +47,11 @@ const app = createApp({
         .then((res) => {
           const { products } = res.data;
           this.products = products;
-          console.log(products);
         })
-        .catch((err) => console.log(err));
+        .catch((err) => alert(err.data.message));
     },
     getProduct(id) {
-      this.loading.loadingItem = id;
+      this.loading = id;
       axios
         .get(`${this.url}/api/${this.path}/product/${id}`)
         .then((res) => {
@@ -35,10 +59,13 @@ const app = createApp({
           this.tempProduct = product;
           setTimeout(() => {
             this.$refs.productModal.modal.show();
-            this.loading.loadingItem = '';
+            this.loading = '';
           }, 300);
         })
-        .catch((err) => console.log(err));
+        .catch((err) => {
+          this.loading = '';
+          alert(err.data.message);
+        });
     },
     getCart() {
       axios
@@ -49,7 +76,7 @@ const app = createApp({
         .catch((err) => console.log(err));
     },
     addToCart(product_id, qty = 1) {
-      this.loading.loadingItem = product_id;
+      this.loading = product_id;
       const data = {
         product_id,
         qty,
@@ -60,10 +87,13 @@ const app = createApp({
           this.$refs.productModal.modal.hide();
           this.getCart();
           setTimeout(() => {
-            this.loading.loadingItem = '';
+            this.loading = '';
           }, 300);
         })
-        .catch((err) => console.log(err));
+        .catch((err) => {
+          this.loading = '';
+          alert(err.data.message);
+        });
     },
     updateToCart(item) {
       let data = {
@@ -72,36 +102,54 @@ const app = createApp({
       };
       axios
         .put(`${this.url}/api/${this.path}/cart/${item.id}`, { data })
-        .then((res) => {
+        .then(() => {
           this.getCart();
         })
-        .catch((err) => console.log(err));
+        .catch((err) => alert(err.data.message));
     },
     deleteCarts() {
       axios
         .delete(`${this.url}/api/${this.path}/carts`)
-        .then((res) => {
+        .then(() => {
           this.getCart();
         })
         .catch((err) => alert(err.data.message));
     },
     deleteCart(id) {
-      this.loading.loadingItem = id;
+      this.loading = id;
       axios
         .delete(`${this.url}/api/${this.path}/cart/${id}`)
-        .then((res) => {
+        .then(() => {
           this.getCart();
-          this.loading.loadingItem = '';
+          this.loading = '';
         })
-        .catch((err) => alert(err.data.message));
+        .catch((err) => {
+          this.loading = '';
+          alert(err.data.message);
+        });
     },
     isLoadingItem(product_id) {
       return (
-        this.loading.loadingItem ===
+        this.loading ===
         this.cart.carts.find((item) => {
           item.product.id === product_id ? true : false;
         })
       );
+    },
+    isPhone(value) {
+      const phoneNumber = /^(09)[0-9]{8}$/;
+      return phoneNumber.test(value) ? true : '需要正確的電話號碼';
+    },
+    onSubmit() {
+      axios
+        .post(`${this.url}/api/${this.path}/order`, { data: this.form })
+        .then((res) => {
+          alert(`${res.data.message} | 訂單編號 ${res.data.orderId}`);
+          this.form.message = '';
+          this.$refs.form.resetForm();
+          this.getCart();
+        })
+        .catch((err) => alert(err.data.message));
     },
   },
 
@@ -111,6 +159,9 @@ const app = createApp({
   },
   components: {
     productModal,
+    VForm: Form,
+    VField: Field,
+    ErrorMessage,
   },
 });
 
