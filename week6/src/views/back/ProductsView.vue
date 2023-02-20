@@ -1,4 +1,5 @@
 <template>
+  <VLoading :active="isLoading" :can-cancel="false" :color="'#007bff'" :is-full-page="true"></VLoading>
   <div class="container">
     <div class="text-end mt-4">
       <button class="btn btn-primary" @click="openModal('new')">
@@ -39,6 +40,7 @@
         </tr>
       </tbody>
     </table>
+    <VuePagination :propsPagination="pagination" :getProduct="getProduct" @pageEmit="getProduct"></VuePagination>
   </div>
   <!-- Modal -->
   <div
@@ -74,14 +76,17 @@
 import Modal from 'bootstrap/js/dist/modal'
 import EditModal from '../../components/EditModal.vue'
 import DeleteModal from '../../components/DeleteModal.vue'
+import VuePagination from '../../components/VuePagination.vue'
 const { VITE_URL, VITE_PATH } = import.meta.env
 let myModal = ''
 let deleteModal = ''
 export default {
+  props: ['token'],
   data () {
     return {
       isLoading: false,
       products: [],
+      pagination: {},
       is_new: true,
       temp: {
         imagesUrl: []
@@ -89,17 +94,6 @@ export default {
     }
   },
   methods: {
-    getProducts () {
-      this.isLoading = true
-      this.$http
-        .get(`${VITE_URL}/api/${VITE_PATH}/products/all`)
-        .then((res) => {
-          const { products } = res.data
-          this.products = products
-          this.isLoading = false
-        })
-        .catch((err) => alert(err.data.message))
-    },
     openModal (state, item) {
       switch (state) {
         case 'new':
@@ -119,49 +113,67 @@ export default {
       }
     },
     getProduct (page = 1) {
+      this.isLoading = true
       this.$http
         .get(`${VITE_URL}/api/${VITE_PATH}/admin/products/?page=${page}`)
         .then((res) => {
+          this.isLoading = false
           const { pagination, products } = res.data
           this.pagination = pagination
           this.products = products
         })
-        .catch((err) => alert(err.data.message))
+        .catch((err) => {
+          this.isLoading = false
+          this.$swal(err.response.data.message)
+        })
     },
     addProduct () {
+      this.isLoading = true
       if (this.is_new) {
         this.$http
           .post(`${VITE_URL}/api/${VITE_PATH}/admin/product`, {
             data: this.temp
           })
           .then((res) => {
-            alert(res.data.message)
+            this.$swal(res.data.message)
             myModal.hide()
             this.getProduct()
+            this.isLoading = false
           })
-          .catch((err) => alert(err.data.message))
+          .catch((err) => {
+            this.isLoading = false
+            this.$swal(err.data.message)
+          })
       } else {
         this.$http
           .put(`${VITE_URL}/api/${VITE_PATH}/admin/product/${this.temp.id}`, {
             data: this.temp
           })
           .then((res) => {
-            alert(res.data.message)
+            this.$swal(res.data.message)
             myModal.hide()
             this.getProduct()
           })
-          .catch((err) => console.dir(err))
+          .catch((err) => {
+            this.isLoading = false
+            this.$swal(err.data.message)
+          })
       }
     },
     deleteProduct (id) {
+      this.isLoading = true
       this.$http
         .delete(`${VITE_URL}/api/${VITE_PATH}/admin/product/${id}`)
         .then((res) => {
-          alert(res.data.message)
+          this.isLoading = false
+          this.$swal(res.data.message)
           deleteModal.hide()
           this.getProduct()
         })
-        .catch((err) => alert(err.data.message))
+        .catch((err) => {
+          this.isLoading = false
+          this.swal(err.data.message)
+        })
     },
     createImages () {
       this.temp.imagesUrl = []
@@ -170,10 +182,13 @@ export default {
   },
   components: {
     EditModal,
-    DeleteModal
+    DeleteModal,
+    VuePagination
   },
   mounted () {
-    this.getProducts()
+    this.$http.defaults.headers.common.Authorization = document.cookie.replace(
+      /(?:(?:^|.*;\s*)myToken\s*=\s*([^;]*).*$)|^.*$/, '$1')
+    this.getProduct()
     myModal = new Modal(document.querySelector('#productModal'))
     deleteModal = new Modal(
       document.querySelector('#delProductModal')

@@ -43,6 +43,10 @@ const routes = [
         component: () => import('../views/back/OrderView.vue')
       }
     ]
+  },
+  {
+    path: '/:pathMatch(.*)*',
+    component: () => import('../views/404Error.vue')
   }
 ]
 

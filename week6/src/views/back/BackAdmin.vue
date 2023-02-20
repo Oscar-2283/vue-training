@@ -4,7 +4,7 @@
   </h1>
   <div class="d-flex gap-3 justify-content-center">
     <router-link to="/">回前台</router-link> |
-    <router-link to="/BackAdmin/ProductsView">產品列表</router-link> |
+    <router-link to="/BackAdmin/ProductsView" :token="token">產品列表</router-link> |
     <router-link to="/BackAdmin/OrderView">訂單列表</router-link> |
     <a href="#" @click.prevent="logOut">登出</a>
 
@@ -15,6 +15,11 @@
 <script>
 const { VITE_URL } = import.meta.env
 export default {
+  data () {
+    return {
+      token: ''
+    }
+  },
   methods: {
     checkAdmin () {
       this.$http
@@ -31,9 +36,9 @@ export default {
     }
   },
   mounted () {
-    const token = document.cookie.replace(
+    this.token = document.cookie.replace(
       /(?:(?:^|.*;\s*)myToken\s*=\s*([^;]*).*$)|^.*$/, '$1')
-    this.$http.defaults.headers.common.Authorization = token
+    this.$http.defaults.headers.common.Authorization = this.token
     this.checkAdmin()
   }
 }
